@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FluxAuth -EROX</title>
+  <meta name="description" content="A clean, modern KeyAuth‑inspired auth portal with Home, Docs, Login/Register, and Dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f18;
+      --elev: #101522;
+      --card: #131a2a;
+      --muted: #93a2b7;
+      --text: #e8eef8;
+      --brand: #6aa0ff;
+      --brand-2: #7cd6f3;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f1c40f;
+      --border: #1f2a44;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 80% -10%, rgba(108,168,255,.15), transparent 40%) ,
+                  radial-gradient(1200px 700px at -20% 110%, rgba(124,214,243,.12), transparent 40%),
+                  var(--bg);
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1200px, 92vw); margin: 0 auto; }
+
+    /* Navbar */
+    .nav { position: sticky; top: 0; z-index: 50; background: rgba(10,14,24,.65); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .3px; }
+    .logo { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #081222; font-weight: 900; box-shadow: 0 10px 24px rgba(106,160,255,.35), inset 0 1px 0 rgba(255,255,255,.2); }
+    .links { display: flex; align-items: center; gap: 18px; }
+    .links a { color: var(--muted); font-weight: 500; padding: 10px 12px; border-radius: 10px; }
+    .links a.active, .links a:hover { color: var(--text); background: rgba(255,255,255,.04); }
+    .cta { display: flex; gap: 10px; }
+    .btn { appearance: none; border: 1px solid var(--border); background: linear-gradient(180deg, #141c2b, #0f1422); color: var(--text); padding: 10px 14px; border-radius: 12px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); transition: transform .08s ease, box-shadow .2s ease, background .2s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { border: none; background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #0a1322; }
+    .btn.ghost { background: transparent; }
+
+    /* Hero */
+    .hero { padding: 76px 0 28px; }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: center; }
+    .badge { display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border:1px solid var(--border); border-radius:999px; color:var(--muted); font-size:12px; }
+    .badge .dot { width:8px; height:8px; border-radius:50%; background: var(--success); box-shadow:0 0 0 5px rgba(46,204,113,.12); }
+    .hero h1 { font-size: clamp(28px, 5.2vw, 54px); line-height: 1.05; margin: 12px 0 10px; }
+    .hero p { color: var(--muted); font-size: clamp(14px, 1.9vw, 18px); }
+    .hero-actions { display:flex; gap:12px; margin-top:18px; }
+
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
+    .panel { padding: 18px; }
+
+    /* Feature grid */
+    .features { padding: 34px 0 10px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); }
+    .feature { padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border); background: radial-gradient(500px 200px at -20% -20%, rgba(106,160,255,.12), transparent 40%), var(--card); }
+    .feature h3 { margin: 0 0 6px; font-size: 18px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    /* Code block */
+    pre.code { margin: 0; padding: 16px; background: #0b1220; color: #e6edf3; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; border-radius: var(--radius-md); border: 1px solid var(--border); overflow: auto; }
+
+    /* Sections */
+    section { padding: 46px 0; }
+    section h2 { margin: 0 0 12px; font-size: 26px; }
+    section .sub { color: var(--muted); margin-bottom: 18px; }
+
+    /* Auth */
+    .auth { display:grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+    .field { display: grid; gap: 8px; }
+    label { color: var(--muted); font-size: 13px; }
+    input, select { background: #0c1220; border: 1px solid var(--border); padding: 12px 12px; border-radius: 12px; color: var(--text); outline: none; }
+    .hint { color: var(--muted); font-size: 12px; }
+    .notice { padding: 10px 12px; border-radius: 10px; background: rgba(124,214,243,.1); border: 1px solid #234056; color: #cfefff; }
+
+    /* Dashboard */
+    .dash-grid { display: grid; grid-template-columns: 1fr 320px; gap: 18px; }
+    .stat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .stat h4 { margin: 0 0 4px; }
+    .stat .k { font-size: 28px; font-weight: 800; }
+    .table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .table th, .table td { padding: 12px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; color: #d8e5f8; }
+    .table th { background: #0c1323; color: var(--muted); font-weight: 600; }
+
+    /* Footer */
+    footer { padding: 30px 0 50px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 50px; }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .auth { grid-template-columns: 1fr; }
+      .dash-grid { grid-template-columns: 1fr; }
+      .links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="#home" class="brand" onclick="route('#home')">
+        <div class="logo">FA</div>
+        <div>FluxAuth</div>
+      </a>
+      <div class="links">
+        <a href="#home" data-link="home">Home</a>
+        <a href="#docs" data-link="docs">Docs</a>
+        <a href="#dashboard" data-link="dashboard">Dashboard</a>
+      </div>
+      <div class="cta" id="authCta">
+        <button class="btn ghost" onclick="showAuth('login')">Log in</button>
+        <button class="btn primary" onclick="showAuth('register')">Sign up</button>
+      </div>
+      <div class="cta" id="userCta" style="display:none">
+        <button class="btn" onclick="route('#dashboard')">Open Dashboard</button>
+        <button class="btn ghost" onclick="logout()">Log out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="container">
+    <!-- HOME -->
+    <section id="home" class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="badge"><span class="dot"></span>Online • Status OK</span>
+          <h1>Ship licensing, auth, and protections with style.</h1>
+          <p>Drop‑in user authentication and licensing flows with a clean dashboard and developer‑friendly API. This is a KeyAuth‑inspired template — make it yours.</p>
+          <div class="hero-actions">
+            <button class="btn primary" onclick="showAuth('register')">Create free account</button>
+            <button class="btn" onclick="route('#docs')">Read the docs</button>
+          </div>
+          <div style="margin-top:14px" class="hint">No credit card • Modern REST endpoints • Works with your stack</div>
+        </div>
+        <div class="card panel">
+          <h3 style="margin:6px 0 10px">Quick start</h3>
+          <pre class="code"><code>// 1) Sign up, create an application
+// 2) Use your App ID and Secret
+// 3) Exchange credentials for a session token
+
+POST /api/v1/auth/login
+{
+  "appId": "YOUR_APP_ID",
+  "key": "LICENSE_OR_PASSWORD"
+}
+
+// Response
+{
+  "token": "SESSION_TOKEN",
+  "user": { "id": "...", "plan": "Pro" }
+}
+
+// Use the token on subsequent requests
+GET /api/v1/me   Authorization: Bearer SESSION_TOKEN</code></pre>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="grid">
+          <div class="feature">
+            <h3>Licensing</h3>
+            <p>Time‑limited keys, HWID locking, blacklisting, renewal reminders.</p>
+          </div>
+          <div class="feature">
+            <h3>Auth & Teams</h3>
+            <p>Email/Key login, roles, teammates, audit log, IP allow/deny.</p>
+          </div>
+          <div class="feature">
+            <h3>Webhooks</h3>
+            <p>Push events to your server for sign‑ins, key use, and revocations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCS -->
+    <section id="docs" style="display:none">
+      <h2>API Docs</h2>
+      <div class="sub">Minimal, friendly endpoints. Replace <code>BASE_URL</code> with your deployment.</div>
+
+      <div class="card panel" style="margin-bottom:16px">
+        <h3 style="margin:0 0 12px">Auth</h3>
+        <pre class="code"><code>POST BASE_URL/api/v1/auth/register
+{
+  "email": "user@example.com",
+  "password": "strong_password",
+  "appId": "YOUR_APP_ID"
+}
+
+POST BASE_URL/api/v1/auth/login
+{
+  "emailOrKey": "user@example.com",
+  "passwordOrKey": "...",
+  "appId": "YOUR_APP_ID"
+}
+
+POST BASE_URL/api/v1/auth/refresh  (Authorization: Bearer REFRESH_TOKEN)
+
+GET  BASE_URL/api/v1/me            (Authorization: Bearer ACCESS_TOKEN)
+</code></pre>
+      </div>
+
+      <div class="card panel" style="margin-bottom:16px">
+        <h3 style="margin:0 0 12px">Keys</h3>
+        <pre class="code"><code>POST BASE_URL/api/v1/keys
+{
+  "plan": "Pro",
+  "expiresInDays": 30
+}
+
+POST BASE_URL/api/v1/keys/activate
+{
+  "key": "XXXX-XXXX-XXXX-XXXX",
+  "hwid": "DEVICE_ID"
+}
+
+POST BASE_URL/api/v1/keys/revoke
+{
+  "key": "XXXX-XXXX-XXXX-XXXX"
+}
+</code></pre>
+      </div>
+
+      <div class="card panel">
+        <h3 style="margin:0 0 12px">Errors</h3>
+        <pre class="code"><code>{
+  "error": {
+    "code": "invalid_key",
+    "message": "Key is expired or revoked",
+    "retryAfter": 0
+  }
+}</code></pre>
+        <div class="hint" style="margin-top:10px">Return consistent error shapes with HTTP status codes.</div>
+      </div>
+    </section>
+
+    <!-- AUTH -->
+    <section id="auth" style="display:none">
+      <h2 id="authTitle">Welcome</h2>
+      <div class="sub">Create an account or sign in to continue.</div>
+      <div class="card panel">
+        <form id="authForm">
+          <div class="auth">
+            <div class="field">
+              <label>Email (or License Key)</label>
+              <input id="email" placeholder="you@example.com or XXXX-XXXX-XXXX-XXXX" autocomplete="username" />
+            </div>
+            <div class="field">
+              <label>Password (or Key Secret)</label>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <div class="field">
+              <label>Application</label>
+              <select id="appId">
+                <option value="demo-app">Demo App</option>
+              </select>
+              <div class="hint">Replace with your real Application IDs.</div>
+            </div>
+            <div class="field">
+              <label>Mode</label>
+              <select id="mode">
+                <option value="login">Login</option>
+                <option value="register">Register</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:14px; align-items:center;">
+            <button class="btn primary" type="submit">Continue</button>
+            <span class="hint" id="authHint">Uses demo endpoints by default. Wire your API below.</span>
+          </div>
+        </form>
+      </div>
+
+      <div style="margin-top:12px" class="notice">
+        <strong>Plug your API:</strong> set <code>window.API_BASE</code> and endpoints in the script. Supports Bearer tokens with localStorage.
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" style="display:none">
+      <h2>Dashboard</h2>
+      <div class="sub">Welcome back. Below is a skeleton you can connect to your backend.</div>
+      <div class="dash-grid">
+        <div>
+          <div class="grid" style="grid-template-columns: repeat(3,1fr); margin-bottom:16px;">
+            <div class="stat">
+              <h4>Active Users</h4>
+              <div class="k" id="mActive">—</div>
+            </div>
+            <div class="stat">
+              <h4>Valid Keys</h4>
+              <div class="k" id="mKeys">—</div>
+            </div>
+            <div class="stat">
+              <h4>Blacklist</h4>
+              <div class="k" id="mBlacklist">—</div>
+            </div>
+          </div>
+
+          <div class="card panel" style="margin-bottom:16px">
+            <h3 style="margin:0 0 12px">Recent Activity</h3>
+            <table class="table" id="activityTable">
+              <thead>
+                <tr><th>Time</th><th>Event</th><th>User/Key</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card panel">
+            <h3 style="margin:0 0 12px">Create License</h3>
+            <form id="keyForm" style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <input id="plan" placeholder="Plan (e.g. Pro)" />
+              <input id="days" type="number" min="1" value="30" />
+              <input id="count" type="number" min="1" value="1" />
+              <button class="btn" type="submit">Generate</button>
+            </form>
+            <pre class="code" id="keyOut" style="margin-top:12px; display:none"></pre>
+          </div>
+        </div>
+        <aside>
+          <div class="card panel" style="position:sticky; top:88px;">
+            <h3 style="margin:0 0 12px">Session</h3>
+            <div id="sessionBox" class="hint">Not signed in.</div>
+            <div style="display:flex; gap:8px; margin-top:12px">
+              <button class="btn" onclick="refreshMe()">Refresh Info</button>
+              <button class="btn ghost" onclick="logout()">Log out</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div>© <span id="year"></span> FluxAuth. Not affiliated with KeyAuth. For demonstration only.</div>
+      <div style="display:flex; gap:12px">
+        <a href="#docs" onclick="route('#docs')">API</a>
+        <a href="#home" onclick="route('#home')">Status</a>
+        <a href="#home" onclick="route('#home')">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // =============================
+    // CONFIG — REPLACE WITH YOURS
+    // =============================
+    window.API_BASE = ""; // e.g. "https://your-auth.example.com" (no trailing slash)
+
+    const ENDPOINTS = {
+      register: () => `${window.API_BASE}/api/v1/auth/register`,
+      login:    () => `${window.API_BASE}/api/v1/auth/login`,
+      me:       () => `${window.API_BASE}/api/v1/me`,
+      createKey:() => `${window.API_BASE}/api/v1/keys`,
+      stats:    () => `${window.API_BASE}/api/v1/stats`,
+      activity: () => `${window.API_BASE}/api/v1/activity`,
+    };
+
+    // Demo mode: if API_BASE is empty, fake responses locally.
+    const DEMO = !window.API_BASE;
+
+    // Simple in-memory activity feed for demo
+    const demoState = {
+      users: [{ id: 'u_123', email: 'demo@user.dev', plan: 'Pro' }],
+      keys:  [{ key: 'DEMO-KEY-1234-5678', plan: 'Pro', expiresInDays: 30 }],
+      activity: []
+    };
+
+    // Helpers
+    const $ = (sel) => document.querySelector(sel);
+    const setActiveLink = (hash) => {
+      document.querySelectorAll('.links a').forEach(a => {
+        a.classList.toggle('active', `#${a.dataset.link}` === hash);
+      });
+    };
+
+    const route = (hash) => {
+      if (!hash) hash = '#home';
+      window.location.hash = hash;
+      document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
+      const id = hash.replace('#','');
+      const el = document.getElementById(id) || document.getElementById('home');
+      el.style.display = '';
+      setActiveLink(hash);
+      if (id === 'dashboard') initDashboard();
+    };
+
+    window.addEventListener('hashchange', () => route(window.location.hash));
+
+    // Auth UI
+    function showAuth(mode='login') {
+      route('#auth');
+      $('#authTitle').textContent = mode === 'register' ? 'Create your account' : 'Welcome back';
+      $('#mode').value = mode;
+      $('#authHint').textContent = DEMO ? 'Demo mode: this will simulate an API call.' : 'This will call your API.';
+    }
+
+    function setSession(token, user){
+      if (token) localStorage.setItem('flux_access', token);
+      if (user) localStorage.setItem('flux_user', JSON.stringify(user));
+      updateChrome();
+    }
+
+    function getSession(){
+      return {
+        token: localStorage.getItem('flux_access') || '',
+        user: JSON.parse(localStorage.getItem('flux_user') || 'null')
+      };
+    }
+
+    function logout(){
+      localStorage.removeItem('flux_access');
+      localStorage.removeItem('flux_user');
+      updateChrome();
+      if (window.location.hash === '#dashboard') route('#home');
+    }
+
+    function updateChrome(){
+      const { token, user } = getSession();
+      document.getElementById('authCta').style.display = token ? 'none' : '';
+      document.getElementById('userCta').style.display = token ? '' : 'none';
+      document.getElementById('sessionBox').textContent = token ? `Logged in as ${user?.email || 'Unknown'} — token: ${token.slice(0, 12)}…` : 'Not signed in.';
+    }
+
+    // Fake/dynamic API
+    async function api(path, body) {
+      if (!DEMO) {
+        const res = await fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(getSession().token ? { 'Authorization': 'Bearer ' + getSession().token } : {}) },
+          body: JSON.stringify(body || {})
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      }
+      // DEMO: Simulate endpoints
+      await new Promise(r => setTimeout(r, 400));
+      if (path.includes('/login')) {
+        const user = demoState.users[0];
+        demoState.activity.unshift({ t: new Date().toISOString(), e: 'login', who: user.email, ok: true });
+        return { token: 'demo_token_' + Math.random().toString(36).slice(2, 10), user };
+      }
+      if (path.includes('/register')) {
+        const email = document.getElementById('email').value || `user${Date.now()}@mail.dev`;
+        const user = { id: 'u_' + Math.random().toString(36).slice(2, 7), email, plan: 'Free' };
+        demoState.users.unshift(user);
+        demoState.activity.unshift({ t: new Date().toISOString(), e: 'register', who: email, ok: true });
+        return { token: 'demo_token_' + Math.random().toString(36).slice(2, 10), user };
+      }
+      if (path.endsWith('/keys')) {
+        const key = 'KEY-' + Math.random().toString(36).toUpperCase().slice(2, 6) + '-' + Math.random().toString(36).toUpperCase().slice(2, 6) + '-' + Math.random().toString(36).toUpperCase().slice(2, 6);
+        const plan = document.getElementById('plan').value || 'Pro';
+        const expiresInDays = +document.getElementById('days').value || 30;
+        demoState.keys.unshift({ key, plan, expiresInDays });
+        demoState.activity.unshift({ t: new Date().toISOString(), e: 'create_key', who: plan, ok: true });
+        return { keys: [{ key, plan, expiresInDays }] };
+      }
+      if (path.endsWith('/stats')) {
+        return { activeUsers: demoState.users.length, validKeys: demoState.keys.length, blacklist: 2 };
+      }
+      if (path.endsWith('/activity')) {
+        return { activity: demoState.activity.slice(0, 8) };
+      }
+      if (path.endsWith('/me')) {
+        const user = demoState.users[0];
+        return { user };
+      }
+      return {};
+    }
+
+    // Event handlers
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mode = document.getElementById('mode').value;
+      const emailOrKey = document.getElementById('email').value.trim();
+      const passwordOrKey = document.getElementById('password').value.trim();
+      const appId = document.getElementById('appId').value;
+
+      try {
+        const { token, user } = await api(mode === 'register' ? ENDPOINTS.register() : ENDPOINTS.login(), {
+          emailOrKey, passwordOrKey, appId
+        });
+        setSession(token, user);
+        route('#dashboard');
+      } catch (err) {
+        alert('Auth failed: ' + err.message);
+      }
+    });
+
+    document.getElementById('keyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const data = await api(ENDPOINTS.createKey(), {
+          plan: document.getElementById('plan').value,
+          expiresInDays: +document.getElementById('days').value || 30,
+          count: +document.getElementById('count').value || 1,
+        });
+        const pre = document.getElementById('keyOut');
+        pre.style.display = 'block';
+        pre.textContent = JSON.stringify(data, null, 2);
+        initDashboard();
+      } catch (err) {
+        alert('Key creation failed: ' + err.message);
+      }
+    });
+
+    async function refreshMe(){
+      const { token } = getSession();
+      if (!token) return alert('You are not logged in.');
+      try {
+        const res = await (DEMO ? api(ENDPOINTS.me()) : fetch(ENDPOINTS.me(), { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json()));
+        document.getElementById('sessionBox').textContent = `Logged in as ${res.user?.email || 'Unknown'} — token: ${token.slice(0, 12)}…`;
+      } catch (e) {
+        alert('Failed to refresh user info.');
+      }
+    }
+
+    async function initDashboard(){
+      const { token } = getSession();
+      if (!token) { showAuth('login'); return; }
+      try {
+        const stats = await (DEMO ? api(ENDPOINTS.stats()) : fetch(ENDPOINTS.stats(), { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json()));
+        document.getElementById('mActive').textContent = stats.activeUsers ?? '—';
+        document.getElementById('mKeys').textContent = stats.validKeys ?? '—';
+        document.getElementById('mBlacklist').textContent = stats.blacklist ?? '—';
+
+        const activity = await (DEMO ? api(ENDPOINTS.activity()) : fetch(ENDPOINTS.activity(), { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json()));
+        const tbody = document.querySelector('#activityTable tbody');
+        tbody.innerHTML = '';
+        (activity.activity || []).forEach(a => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${new Date(a.t).toLocaleString()}</td><td>${a.e}</td><td>${a.who}</td><td>${a.ok ? 'OK' : 'Fail'}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Boot
+    document.getElementById('year').textContent = new Date().getFullYear();
+    updateChrome();
+    route(window.location.hash || '#home');
+  </script>
+</body>
+</html>
